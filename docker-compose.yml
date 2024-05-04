@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  kali:
+    container_name: kali
+    hostname: my-kali
+    restart: unless-stopped
+    image: custom-kali
+    ports:
+      - "9020:8080"
+    environment:
+      - VNCEXPOSE=0
+      - VNCPORT=5900
+      - VNCPWD=changeme
+      - VNCDISPLAY=1920x1080
+      - VNCDEPTH=16

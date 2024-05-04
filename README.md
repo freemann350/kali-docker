@@ -1,10 +1,23 @@
-# Kali Linux 2020.4 Docker Container with XFCE Desktop over VNC / noVNC
+# FORKED REPO
+
+Made the Kali VNC container be able to be run over docker-compose, removed noVNC SSL (websockify had errors) & added kali-tools-top10 as default package.
+
+Build first:
+
+```
+docker build -t custom-kali .
+```
+
+(Make sure the command is run on the same location as the Dockerfile)
+
+
+## Kali Linux Docker Container with XFCE Desktop over VNC / noVNC
 
 Did you ever wanted to start a fully-fledged Kali Linux Docker container with a full desktop experience? If so, then this Docker image suits your needs: it provides quick access to all Kali Linux tools via CLI and even a Kali Desktop of your choice – directly from within the Docker container. Therefore, it uses the `tightvncserver` to provide a VNC connection to the container and `novnc` for simple VNC access with your browser.
 
 **IMPORTANT:** This image is for testing purposes only. Do not run it on any production systems or for any productive purposes. Feel free to modify it as you like – build instructions are given below.
 
-## 1) Pull
+### 1) Pull
 
 First, pull the image:
 
@@ -14,7 +27,7 @@ docker pull iphoneintosh/kali-docker:latest
 
 You can also pull images with preconfigured metapackages: `iphoneintosh/kali-docker:default`, `iphoneintosh/kali-docker:large`, or `iphoneintosh/kali-docker:top10`.
 
-## 2) Run
+### 2) Run
 
 Second, start a new container from the previously pulled image. This opens a new shell on your console as well as a Kali Desktop which you can access in your browser on `https://localhost:8080/vnc.html`.
 
@@ -45,7 +58,7 @@ The default configuration is set as follows. Feel free to change this as require
   - You can optionally mount your self-signed certificate and key to the container.
   - Use `openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout key.pem` to create a new certificate and key.
 
-## Customization
+### Customization
 
 You can also build a custom image, i.e., if you want to use another Kali Desktop. If so, you can simply pass the Kali Desktop of your choice (i.e., `mate`, `gnome`, ...) as build argument. By default, the XFCE Desktop is configured. You may also edit the `Dockerfile` or `entrypoint.sh` to install custom packages. Also, you can specify different Kali Linux metapackages, i.e., `core`, `default`, `light`, `large`, `everything`, or `top10`. See [https://www.kali.org/news/major-metapackage-makeover/](https://www.kali.org/news/major-metapackage-makeover/) for more details and metapackages.
 

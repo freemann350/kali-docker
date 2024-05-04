@@ -1,12 +1,10 @@
 #!/bin/bash
 
 # Set password for VNC
-
 mkdir -p /root/.vnc/
 echo $VNCPWD | vncpasswd -f > /root/.vnc/passwd
 chmod 600 /root/.vnc/passwd
-
-# Start VNC server
+echo "VNC password set successfully"
 
 if [ $VNCEXPOSE = 1 ]
 then
@@ -14,32 +12,18 @@ then
   vncserver :0 -rfbport $VNCPORT -geometry $VNCDISPLAY -depth $VNCDEPTH \
     > /var/log/vncserver.log 2>&1
 else
-  # Localhost only
+  # Localhost VNC only
   vncserver :0 -rfbport $VNCPORT -geometry $VNCDISPLAY -depth $VNCDEPTH -localhost \
-    > /var/log/vncserver.log 2>&1
+      > /var/log/vncserver.log 2>&1
 fi
+echo "VNC server started"
 
-# Start noVNC server
+# Start NoVNC (NO SSL)
+/usr/share/novnc/utils/novnc_proxy --listen 8080 --vnc localhost:5900 \
+    > /var/log/novnc.log 2>&1 &
+echo "NoVNC proxy started"
 
-if [ ! -f /etc/ssl/certs/novnc_cert.pem -o ! -f /etc/ssl/private/novnc_key.pem ]
-then
-  openssl req -new -x509 -days 365 -nodes \
-    -subj "/C=US/ST=IL/L=Springfield/O=OpenSource/CN=localhost" \
-    -out /etc/ssl/certs/novnc_cert.pem -keyout /etc/ssl/private/novnc_key.pem \
-    > /dev/null 2>&1
-fi
+echo "Launch your web browser and open http://localhost:9020/vnc.html"
 
-cat /etc/ssl/certs/novnc_cert.pem /etc/ssl/private/novnc_key.pem > /etc/ssl/private/novnc_combined.pem
-chmod 600 /etc/ssl/private/novnc_combined.pem
-
-/usr/share/novnc/utils/launch.sh --listen $NOVNCPORT --vnc localhost:$VNCPORT \
-  --cert /etc/ssl/private/novnc_combined.pem --ssl-only \
-  > /var/log/novnc.log 2>&1 &
-
-echo "Launch your web browser and open https://localhost:9020/vnc.html"
-echo "Verify the certificate fingerprint:"
-openssl x509 -in /etc/ssl/certs/novnc_cert.pem -noout -fingerprint -sha256
-
-# Start shell
-
-/bin/bash
+# Keep container running
+tail -f /dev/null
